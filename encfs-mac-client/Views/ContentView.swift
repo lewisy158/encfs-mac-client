@@ -1,76 +1,122 @@
-//
-//  ContentView.swift
-//  mac_test
-//
-//  Created by 应璐暘 on 2024/5/10.
-//
 
 import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-    
-    @State private var showCreation: Bool = false
-    @State private var deleteCreation: Bool = false
+    @ObservedObject var pointModel: PointModel
+
+    @State private var showImportation: Bool = false
+    @State private var deleteConfirmation: Bool = false
+    @State private var selectedIndex: Int = -1
+    @State private var selectedMountState: Bool = false
+    @State private var password: String = ""
+    @State private var errorState: Bool = false
+    @State private var errorString: String = ""
 
     var body: some View {
         NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-            
+            pointView
         } detail: {
-            Text("Select an item")
+            Text("Select a point")
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
-                    showCreation.toggle()
+                    showImportation.toggle()
                 } label: {
-                    Image(systemName: "plus")
+                    Image(systemName: "square.and.arrow.down")
                 }
             }
             ToolbarItem(placement: .primaryAction) {
                 Button {
-                    deleteCreation.toggle()
+                    deleteConfirmation.toggle()
                 } label: {
-                    Image(systemName: "minus")
+                    Image(systemName: "trash")
                 }
+                .disabled(pointModel.points.isEmpty || selectedMountState)
             }
         }
-        .sheet(isPresented: $showCreation) {
-            CreationView()
+        .sheet(isPresented: $showImportation) {
+            ImportView(pointModel: pointModel)
+        }
+        .alert(isPresented: $deleteConfirmation) {
+            Alert(
+                title: Text("Delete Point"),
+                message: Text("Are you sure you want to delete this point?"),
+                primaryButton: .cancel(),
+                secondaryButton: .destructive(Text("Delete")) {
+                    pointModel.deletePoint(index: selectedIndex)
+                }
+            )
         }
     }
     
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+    @ViewBuilder
+    var pointView: some View {
+        List(selection: $selectedIndex) {
+            ForEach(pointModel.points.indices, id: \.self) { index in
+                NavigationLink {
+                    HStack {
+                        if (!pointModel.points[index].mountState) {
+                            SecureField("Password", text: $password)
+                                .frame(width: 120)
+                                .font(.system(size: 16, weight: .medium, design: .rounded))
+                            Button {
+                                let result = pointModel.points[index].mount(password: password)
+                                password = ""
+                                if result.code != 0 {
+                                    errorString = result.errorString
+                                    errorState = true
+                                } else {
+                                    selectedMountState = true
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "externaldrive.badge.plus")
+                                    Text("Mount")
+                                }
+                                .padding(6)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.accentColor)
+                        } else {
+                            Button {
+                                let result = pointModel.points[index].umount()
+                                if result.code != 0 {
+                                    errorString = result.errorString
+                                    errorState = true
+                                } else {
+                                    selectedMountState = false
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "externaldrive.badge.minus")
+                                    Text("Umount")
+                                }
+                                .padding(6)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.accentColor)
+                        }
+                    }
+                } label: {
+                    Text(pointModel.points[index].name)
+                }
+            }
         }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+        .navigationSplitViewColumnWidth(min: 180, ideal: 200)
+        .alert(errorString, isPresented: $errorState) {
+            Button("OK", role: .cancel) {}
+        }
+        .onChange(of: selectedIndex) {
+            password = ""
+            if (0 <= selectedIndex && selectedIndex+1 <= pointModel.points.count) {
+                selectedMountState = pointModel.points[selectedIndex].mountState
             }
         }
     }
 }
 
 #Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+    ContentView(pointModel: PointModel())
 }

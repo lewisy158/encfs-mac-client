@@ -1,17 +1,13 @@
-//
-//  CreationView.swift
-//  mac_test
-//
-//  Created by 应璐暘 on 2024/5/10.
-//
 
 import SwiftUI
 
-struct CreationView: View {
+struct ImportView: View {
+    @ObservedObject var pointModel: PointModel
+    
     @State private var newPointName: String = ""
-    @State private var newSourceURL: URL = (UserDefaults.standard.url(forKey: "defaultBottleLocation") ?? FileManager.default.temporaryDirectory)
-    @State private var newTargetURL: URL = (UserDefaults.standard.url(forKey: "defaultBottleLocation") ?? FileManager.default.temporaryDirectory)
-    @State private var nameValid: Bool = false
+    @State private var newSourceURL: String = ""
+    @State private var newTargetURL: String = ""
+    @State private var createState: Bool = false
     
     @Environment(\.dismiss) private var dismiss
 
@@ -19,28 +15,25 @@ struct CreationView: View {
         NavigationStack {
             Form {
                 TextField("Name", text: $newPointName)
-                    .onChange(of: newPointName) { _, name in
-                        nameValid = !name.isEmpty
-                    }
                 ActionView(
                     text: "Source Path",
-                    subtitle: newSourceURL.path(),
+                    subtitle: newSourceURL,
                     actionName: "Browse"
                 ) {
                     let panel = NSOpenPanel()
                     panel.canChooseFiles = false
                     panel.canChooseDirectories = true
                     panel.allowsMultipleSelection = false
-                    panel.canCreateDirectories = true
+                    panel.canCreateDirectories = false
                     panel.begin { result in
                         if result == .OK, let url = panel.urls.first {
-                            newSourceURL = url
+                            newSourceURL = url.path()
                         }
                     }
                 }
                 ActionView(
                     text: "Target Path",
-                    subtitle: newTargetURL.path(),
+                    subtitle: newTargetURL,
                     actionName: "Browse"
                 ) {
                     let panel = NSOpenPanel()
@@ -50,7 +43,7 @@ struct CreationView: View {
                     panel.canCreateDirectories = true
                     panel.begin { result in
                         if result == .OK, let url = panel.urls.first {
-                            newTargetURL = url
+                            newTargetURL = url.path()
                         }
                     }
                 }
@@ -69,7 +62,8 @@ struct CreationView: View {
                         submit()
                     }
                     .keyboardShortcut(.defaultAction)
-                    .disabled(!nameValid)
+                    .disabled(newPointName.isEmpty || newSourceURL.isEmpty ||
+                        newTargetURL.isEmpty)
                 }
             }
             .onSubmit {
@@ -78,13 +72,23 @@ struct CreationView: View {
         }
         .fixedSize(horizontal: false, vertical: true)
         .frame(width: 400)
+        .alert("Name repeated", isPresented: $createState) {
+            Button("OK", role: .cancel) {}
+        }
     }
 
     func submit() {
-        print("提交")
+        let point = Point(
+            name: newPointName,
+            sourceUrl: newSourceURL,
+            targetUrl: newTargetURL)
+        createState = pointModel.addPoint(point: point)
+        if !createState {
+            dismiss()
+        }
     }
 }
 
 #Preview {
-    CreationView()
+    ImportView(pointModel: PointModel())
 }

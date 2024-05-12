@@ -7,26 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F618A2A02BF0C4AD00E7AD08 /* pointModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F618A29F2BF0C4AD00E7AD08 /* pointModel.swift */; };
+		F618A2A62BF0D07C00E7AD08 /* logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F618A2A52BF0D07C00E7AD08 /* logger.swift */; };
 		F6B665E92BEED9E5009CD819 /* encfs_mac_clientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B665E82BEED9E5009CD819 /* encfs_mac_clientApp.swift */; };
-		F6B665ED2BEED9E5009CD819 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B665EC2BEED9E5009CD819 /* Item.swift */; };
 		F6B665EF2BEED9E6009CD819 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6B665EE2BEED9E6009CD819 /* Assets.xcassets */; };
 		F6B665F22BEED9E6009CD819 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6B665F12BEED9E6009CD819 /* Preview Assets.xcassets */; };
 		F6B665FD2BEEDBCD009CD819 /* ActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B665F92BEEDBCD009CD819 /* ActionView.swift */; };
 		F6B665FE2BEEDBCD009CD819 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B665FA2BEEDBCD009CD819 /* ContentView.swift */; };
-		F6B665FF2BEEDBCD009CD819 /* CreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B665FB2BEEDBCD009CD819 /* CreationView.swift */; };
+		F6B665FF2BEEDBCD009CD819 /* ImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B665FB2BEEDBCD009CD819 /* ImportView.swift */; };
 		F6B666012BEEDC19009CD819 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F6B666002BEEDC19009CD819 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F6B665E52BEED9E5009CD819 /* encfs-mac-client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "encfs-mac-client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F618A29F2BF0C4AD00E7AD08 /* pointModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pointModel.swift; sourceTree = "<group>"; };
+		F618A2A52BF0D07C00E7AD08 /* logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = logger.swift; sourceTree = "<group>"; };
+		F6B665E52BEED9E5009CD819 /* Encfs Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Encfs Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6B665E82BEED9E5009CD819 /* encfs_mac_clientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = encfs_mac_clientApp.swift; sourceTree = "<group>"; };
-		F6B665EC2BEED9E5009CD819 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		F6B665EE2BEED9E6009CD819 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F6B665F12BEED9E6009CD819 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F6B665F32BEED9E6009CD819 /* encfs_mac_client.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = encfs_mac_client.entitlements; sourceTree = "<group>"; };
 		F6B665F92BEEDBCD009CD819 /* ActionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionView.swift; sourceTree = "<group>"; };
 		F6B665FA2BEEDBCD009CD819 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		F6B665FB2BEEDBCD009CD819 /* CreationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreationView.swift; sourceTree = "<group>"; };
+		F6B665FB2BEEDBCD009CD819 /* ImportView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImportView.swift; sourceTree = "<group>"; };
 		F6B666002BEEDC19009CD819 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -53,7 +55,7 @@
 		F6B665E62BEED9E5009CD819 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F6B665E52BEED9E5009CD819 /* encfs-mac-client.app */,
+				F6B665E52BEED9E5009CD819 /* Encfs Client.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -62,11 +64,12 @@
 			isa = PBXGroup;
 			children = (
 				F6B665E82BEED9E5009CD819 /* encfs_mac_clientApp.swift */,
-				F6B665EC2BEED9E5009CD819 /* Item.swift */,
 				F6B665EE2BEED9E6009CD819 /* Assets.xcassets */,
 				F6B665FC2BEEDBCD009CD819 /* Views */,
 				F6B665F32BEED9E6009CD819 /* encfs_mac_client.entitlements */,
 				F6B665F02BEED9E6009CD819 /* Preview Content */,
+				F618A29F2BF0C4AD00E7AD08 /* pointModel.swift */,
+				F618A2A52BF0D07C00E7AD08 /* logger.swift */,
 			);
 			path = "encfs-mac-client";
 			sourceTree = "<group>";
@@ -84,7 +87,7 @@
 			children = (
 				F6B665F92BEEDBCD009CD819 /* ActionView.swift */,
 				F6B665FA2BEEDBCD009CD819 /* ContentView.swift */,
-				F6B665FB2BEEDBCD009CD819 /* CreationView.swift */,
+				F6B665FB2BEEDBCD009CD819 /* ImportView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -92,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F6B665E42BEED9E5009CD819 /* encfs-mac-client */ = {
+		F6B665E42BEED9E5009CD819 /* Encfs Client */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F6B665F62BEED9E6009CD819 /* Build configuration list for PBXNativeTarget "encfs-mac-client" */;
+			buildConfigurationList = F6B665F62BEED9E6009CD819 /* Build configuration list for PBXNativeTarget "Encfs Client" */;
 			buildPhases = (
 				F6B665E12BEED9E5009CD819 /* Sources */,
 				F6B665E22BEED9E5009CD819 /* Frameworks */,
@@ -104,9 +107,9 @@
 			);
 			dependencies = (
 			);
-			name = "encfs-mac-client";
+			name = "Encfs Client";
 			productName = "encfs-mac-client";
-			productReference = F6B665E52BEED9E5009CD819 /* encfs-mac-client.app */;
+			productReference = F6B665E52BEED9E5009CD819 /* Encfs Client.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -137,7 +140,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F6B665E42BEED9E5009CD819 /* encfs-mac-client */,
+				F6B665E42BEED9E5009CD819 /* Encfs Client */,
 			);
 		};
 /* End PBXProject section */
@@ -162,9 +165,10 @@
 			files = (
 				F6B665FD2BEEDBCD009CD819 /* ActionView.swift in Sources */,
 				F6B665FE2BEEDBCD009CD819 /* ContentView.swift in Sources */,
-				F6B665ED2BEED9E5009CD819 /* Item.swift in Sources */,
 				F6B665E92BEED9E5009CD819 /* encfs_mac_clientApp.swift in Sources */,
-				F6B665FF2BEEDBCD009CD819 /* CreationView.swift in Sources */,
+				F6B665FF2BEEDBCD009CD819 /* ImportView.swift in Sources */,
+				F618A2A02BF0C4AD00E7AD08 /* pointModel.swift in Sources */,
+				F618A2A62BF0D07C00E7AD08 /* logger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -227,7 +231,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -284,6 +288,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
@@ -303,6 +308,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Encfs Client";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -331,6 +337,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Encfs Client";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -357,7 +364,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F6B665F62BEED9E6009CD819 /* Build configuration list for PBXNativeTarget "encfs-mac-client" */ = {
+		F6B665F62BEED9E6009CD819 /* Build configuration list for PBXNativeTarget "Encfs Client" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F6B665F72BEED9E6009CD819 /* Debug */,
