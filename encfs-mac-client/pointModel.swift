@@ -2,6 +2,12 @@
 import Foundation
 import os.log
 
+let encodedKeySize = 44
+let saltLength = 20
+
+let keySize = 192
+let blockSize = 1024
+
 struct Point: Codable, Identifiable {
     var id = UUID()
     var name: String
@@ -67,7 +73,20 @@ class PointModel: ObservableObject {
         }
     }
     
-    func addPoint(point: Point) -> Bool {
+//    func createPoint(point: Point, password: String) -> Bool {
+//        if (!points.contains(where: { $0.name == point.name })) {
+//            
+//            let kdfIterations = Int.random(in: 700000...800000)
+//            
+//            self.points.append(point)
+//            saveData()
+//            return false
+//        } else {
+//            return true
+//        }
+//    }
+    
+    func importPoint(point: Point) -> Bool {
         if (!points.contains(where: { $0.name == point.name })) {
             self.points.append(point)
             saveData()
@@ -133,4 +152,18 @@ func shell(_ command: String) -> (code: Int32, errorString: String) {
         Logger.encfs.error("An error occurred: \(error)")
         return (-1, "Error executing command: \(error.localizedDescription)")
     }
+}
+
+//func generateSalt(length: Int) -> Data {
+//    var salt = Data(count: length)
+//    salt.withUnsafeMutableBytes { buffer in
+//        _ = SecRandomCopyBytes(kSecRandomDefault, length, buffer.baseAddress!)
+//    }
+//    return salt
+//}
+
+
+
+func generateKey(password: String) {
+    
 }

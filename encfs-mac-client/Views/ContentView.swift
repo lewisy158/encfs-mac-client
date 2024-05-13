@@ -5,6 +5,7 @@ import SwiftData
 struct ContentView: View {
     @ObservedObject var pointModel: PointModel
 
+//    @State private var showCreation: Bool = false
     @State private var showImportation: Bool = false
     @State private var deleteConfirmation: Bool = false
     @State private var selectedIndex: Int = -1
@@ -20,6 +21,13 @@ struct ContentView: View {
             Text("Select a point")
         }
         .toolbar {
+//            ToolbarItem(placement: .primaryAction) {
+//                Button {
+//                    showCreation.toggle()
+//                } label: {
+//                    Image(systemName: "plus")
+//                }
+//            }
             ToolbarItem(placement: .primaryAction) {
                 Button {
                     showImportation.toggle()
@@ -36,6 +44,9 @@ struct ContentView: View {
                 .disabled(pointModel.points.isEmpty || selectedMountState)
             }
         }
+//        .sheet(isPresented: $showCreation) {
+//            CreationView(pointModel: pointModel)
+//        }
         .sheet(isPresented: $showImportation) {
             ImportView(pointModel: pointModel)
         }

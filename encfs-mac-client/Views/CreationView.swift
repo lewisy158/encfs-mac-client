@@ -1,13 +1,14 @@
 
 import SwiftUI
 
-struct ImportView: View {
+struct CreationView: View {
     @ObservedObject var pointModel: PointModel
     
     @State private var newPointName: String = ""
+    @State private var newPassword: String = ""
     @State private var newSourceURL: String = ""
     @State private var newTargetURL: String = ""
-    @State private var importState: Bool = false
+    @State private var createState: Bool = false
     
     @Environment(\.dismiss) private var dismiss
 
@@ -15,6 +16,7 @@ struct ImportView: View {
         NavigationStack {
             Form {
                 TextField("Name", text: $newPointName)
+                SecureField("Password", text: $newPassword)
                 ActionView(
                     text: "Source Path",
                     subtitle: newSourceURL,
@@ -58,7 +60,7 @@ struct ImportView: View {
                     .keyboardShortcut(.cancelAction)
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Import") {
+                    Button("Create") {
                         submit()
                     }
                     .keyboardShortcut(.defaultAction)
@@ -72,7 +74,7 @@ struct ImportView: View {
         }
         .fixedSize(horizontal: false, vertical: true)
         .frame(width: 400)
-        .alert("Name repeated", isPresented: $importState) {
+        .alert("Name repeated", isPresented: $createState) {
             Button("OK", role: .cancel) {}
         }
     }
@@ -82,13 +84,13 @@ struct ImportView: View {
             name: newPointName,
             sourceUrl: newSourceURL,
             targetUrl: newTargetURL)
-        importState = pointModel.importPoint(point: point)
-        if !importState {
-            dismiss()
-        }
+//        createState = pointModel.createPoint(point: point, password: newPassword)
+//        if !createState {
+//            dismiss()
+//        }
     }
 }
 
 #Preview {
-    ImportView(pointModel: PointModel())
+    CreationView(pointModel: PointModel())
 }
