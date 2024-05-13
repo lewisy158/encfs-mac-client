@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		F618A2A02BF0C4AD00E7AD08 /* pointModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F618A29F2BF0C4AD00E7AD08 /* pointModel.swift */; };
 		F618A2A62BF0D07C00E7AD08 /* logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F618A2A52BF0D07C00E7AD08 /* logger.swift */; };
+		F618A3112BF2234200E7AD08 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F618A3102BF2234200E7AD08 /* SettingView.swift */; };
 		F6B665E92BEED9E5009CD819 /* encfs_mac_clientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6B665E82BEED9E5009CD819 /* encfs_mac_clientApp.swift */; };
 		F6B665EF2BEED9E6009CD819 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6B665EE2BEED9E6009CD819 /* Assets.xcassets */; };
 		F6B665F22BEED9E6009CD819 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6B665F12BEED9E6009CD819 /* Preview Assets.xcassets */; };
@@ -21,6 +22,7 @@
 /* Begin PBXFileReference section */
 		F618A29F2BF0C4AD00E7AD08 /* pointModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pointModel.swift; sourceTree = "<group>"; };
 		F618A2A52BF0D07C00E7AD08 /* logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = logger.swift; sourceTree = "<group>"; };
+		F618A3102BF2234200E7AD08 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		F6B665E52BEED9E5009CD819 /* Encfs Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Encfs Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6B665E82BEED9E5009CD819 /* encfs_mac_clientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = encfs_mac_clientApp.swift; sourceTree = "<group>"; };
 		F6B665EE2BEED9E6009CD819 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 				F6B665F92BEEDBCD009CD819 /* ActionView.swift */,
 				F6B665FA2BEEDBCD009CD819 /* ContentView.swift */,
 				F6B665FB2BEEDBCD009CD819 /* ImportView.swift */,
+				F618A3102BF2234200E7AD08 /* SettingView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -166,6 +169,7 @@
 				F6B665FD2BEEDBCD009CD819 /* ActionView.swift in Sources */,
 				F6B665FE2BEEDBCD009CD819 /* ContentView.swift in Sources */,
 				F6B665E92BEED9E5009CD819 /* encfs_mac_clientApp.swift in Sources */,
+				F618A3112BF2234200E7AD08 /* SettingView.swift in Sources */,
 				F6B665FF2BEEDBCD009CD819 /* ImportView.swift in Sources */,
 				F618A2A02BF0C4AD00E7AD08 /* pointModel.swift in Sources */,
 				F618A2A62BF0D07C00E7AD08 /* logger.swift in Sources */,

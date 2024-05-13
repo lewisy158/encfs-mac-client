@@ -3,16 +3,16 @@ import SwiftUI
 import SwiftData
 import os.log
 
-let DefaultEncfsUrl = "/opt/homebrew/bin/encfs"
+let DefaultEncfsPath = "/opt/homebrew/bin/encfs"
 var pointModel = PointModel()
 
 @main
 struct encfs_mac_clientApp: App {
     
     init() {
-        if (UserDefaults.standard.string(forKey: "encfsUrl") == nil) {
-            UserDefaults.standard.set(DefaultEncfsUrl, forKey: "encfsUrl")
-            Logger.encfs.log("set default encfsUrl")
+        if (UserDefaults.standard.string(forKey: "encfsPath") == nil) {
+            UserDefaults.standard.set(DefaultEncfsPath, forKey: "encfsPath")
+            Logger.encfs.log("set default encfsPath")
         }
     }
 
@@ -21,6 +21,30 @@ struct encfs_mac_clientApp: App {
         WindowGroup {
             ContentView(pointModel: pointModel)
         }
+        .commands {
+            CommandGroup(after: CommandGroupPlacement.appInfo, addition: {Button("Setting"){
+                if let encfsPath = UserDefaults.standard.string(forKey: "encfsPath") {
+                    let settingsWindow = NSWindow(
+                        contentRect: NSRect(x: 0, y: 0, width: 400, height: 300),
+                        styleMask: [.titled, .closable],
+                        backing: .buffered, defer: false)
+                    settingsWindow.center()
+                    settingsWindow.setFrameAutosaveName("Settings")
+                    let settingsView = SettingsView(window: settingsWindow, encfsPath: encfsPath)
+                    settingsWindow.contentView = NSHostingView(rootView: settingsView)
+                    settingsWindow.isReleasedWhenClosed = false
+                    settingsWindow.makeKeyAndOrderFront(nil)
+                }
+            }})
+        }
+    }
+    
+    // 设置窗口的 NSWindow 引用
+//    var settingsWindow: NSWindow?
+
+    // 方法用于打开设置窗口
+    mutating func openSettings() {
+        
     }
     
     class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
@@ -28,26 +52,39 @@ struct encfs_mac_clientApp: App {
             let mainWindow = NSApp.windows[0]
             mainWindow.delegate = self
         }
+        
         func windowShouldClose(_ sender: NSWindow) -> Bool {
+            let mainWindow = NSApp.windows[0]
+            mainWindow.orderOut(nil)
+            return false
+        }
+        
+        func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+            let mainWindow = NSApp.windows[0]
+            if !flag {
+                mainWindow.makeKeyAndOrderFront(nil)
+            }
+            return true
+        }
+        
+        func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
             if !pointModel.canExist() {
-                NSApplication.shared.terminate(self)
-                return true
+                return .terminateNow
             }
             
             let alert = NSAlert()
             alert.messageText = "Confirm Close"
             alert.informativeText = "Are you sure you want to umount all and close this window?"
             alert.alertStyle = .warning
-            alert.addButton(withTitle: "Umount && Close")
+            alert.addButton(withTitle: "Umount && Quit")
             alert.addButton(withTitle: "Cancel")
             
             let response = alert.runModal()
             if response == NSApplication.ModalResponse.alertFirstButtonReturn {
                 pointModel.umount()
-                NSApplication.shared.terminate(self)
-                return true
+                return .terminateNow
             } else {
-                return false
+                return .terminateCancel
             }
         }
     }

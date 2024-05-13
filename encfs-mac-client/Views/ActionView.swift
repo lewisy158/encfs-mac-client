@@ -1,9 +1,3 @@
-//
-//  ActionView.swift
-//  mac_test
-//
-//  Created by 应璐暘 on 2024/5/10.
-//
 
 import SwiftUI
 

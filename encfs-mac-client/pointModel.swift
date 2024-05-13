@@ -21,16 +21,16 @@ struct Point: Codable, Identifiable {
             return (-1, "already mount")
         }
         
-        if let encfsUrl = UserDefaults.standard.string(forKey: "encfsUrl") {
-            let command = "echo '\(password)' | \(encfsUrl) --stdinpass '\(self.sourceUrl)' '\(self.targetUrl)'"
+        if let encfsPath = UserDefaults.standard.string(forKey: "encfsPath") {
+            let command = "echo '\(password)' | \(encfsPath) --stdinpass '\(self.sourceUrl)' '\(self.targetUrl)'"
             let result = shell(command)
             if (result.code == 0) {
                 self.mountState = true
             }
             return (result.code, result.errorString)
         } else {
-            Logger.encfs.error("can not get encfsUrl")
-            return (-1, "can not get encfsUrl")
+            Logger.encfs.error("can not get encfsPath")
+            return (-1, "can not get encfsPath")
         }
         
     }
@@ -40,16 +40,16 @@ struct Point: Codable, Identifiable {
             return (-1, "already umount")
         }
         
-        if let encfsUrl = UserDefaults.standard.string(forKey: "encfsUrl") {
-            let command = "\(encfsUrl) -u '\(self.targetUrl)'"
+        if let encfsPath = UserDefaults.standard.string(forKey: "encfsPath") {
+            let command = "\(encfsPath) -u '\(self.targetUrl)'"
             let result = shell(command)
             if (result.code == 0) {
                 self.mountState = false
             }
             return (result.code, result.errorString)
         } else {
-            Logger.encfs.error("can not get encfsUrl")
-            return (-1, "can not get encfsUrl")
+            Logger.encfs.error("can not get encfsPath")
+            return (-1, "can not get encfsPath")
         }
     }
 }
