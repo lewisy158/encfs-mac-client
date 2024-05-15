@@ -1,15 +1,16 @@
 
 import SwiftUI
 
-struct ImportView: View {
+struct CreationView: View {
     @ObservedObject var pointManager: PointManager
     
     @State private var newPointName: String = ""
+    @State private var newPassword: String = ""
     @State private var newSourcePath: String = ""
     @State private var newMountPath: String = ""
     
-    @State private var importState: Bool = false
-    @State private var importErrorString: String = ""
+    @State private var createState: Bool = false
+    @State private var createErrorString: String = ""
     
     @Environment(\.dismiss) private var dismiss
 
@@ -17,6 +18,7 @@ struct ImportView: View {
         NavigationStack {
             Form {
                 TextField("Name", text: $newPointName)
+                SecureField("Password", text: $newPassword)
                 ActionView(
                     text: "Source Path",
                     subtitle: newSourcePath,
@@ -60,12 +62,13 @@ struct ImportView: View {
                     .keyboardShortcut(.cancelAction)
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Import") {
+                    Button("Create") {
                         submit()
                     }
                     .keyboardShortcut(.defaultAction)
                     .disabled(
                         newPointName.isEmpty ||
+                        newPassword.isEmpty ||
                         newSourcePath.isEmpty ||
                         newMountPath.isEmpty)
                 }
@@ -76,27 +79,27 @@ struct ImportView: View {
         }
         .fixedSize(horizontal: false, vertical: true)
         .frame(width: 400)
-        .alert(importErrorString, isPresented: $importState) {
+        .alert(createErrorString, isPresented: $createState) {
             Button("OK", role: .cancel) {}
         }
     }
 
     func submit() {
-        let point = Point(
+        var point = Point(
             name: newPointName,
             sourcePath: newSourcePath,
             mountPath: newMountPath)
-        let result = pointManager.importPoint(point: point)
+        let result = pointManager.createPoint(point: &point, password: newPassword)
         if !result.state {
-            importErrorString = result.errorString
+            createErrorString = result.errorString
         }
-        importState = result.state
-        if !importState {
+        createState = result.state
+        if !createState {
             dismiss()
         }
     }
 }
 
 #Preview {
-    ImportView(pointManager: PointManager())
+    CreationView(pointManager: PointManager())
 }

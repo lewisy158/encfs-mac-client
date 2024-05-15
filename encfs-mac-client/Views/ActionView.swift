@@ -1,9 +1,3 @@
-//
-//  ActionView.swift
-//  mac_test
-//
-//  Created by 应璐暘 on 2024/5/10.
-//
 
 import SwiftUI
 
@@ -45,5 +39,15 @@ struct ActionView: View {
                 action()
             }
         }
+    }
+}
+
+#Preview {
+    ActionView(
+        text:"test",
+        subtitle: "test",
+        actionName: "Browse"
+    ) {
+        
     }
 }

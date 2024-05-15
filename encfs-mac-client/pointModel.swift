@@ -1,38 +1,35 @@
 
 import Foundation
-import os.log
 
 struct Point: Codable, Identifiable {
     var id = UUID()
     var name: String
-    var sourceUrl: String
-    var targetUrl: String
+    var sourcePath: String
+    var mountPath: String
     var mountState: Bool = false
     
     private enum CodingKeys: String, CodingKey {
         case id
         case name
-        case sourceUrl
-        case targetUrl
+        case sourcePath
+        case mountPath
     }
-    
+
     mutating func mount(password: String) -> (code: Int32, errorString: String) {
         if self.mountState {
             return (-1, "already mount")
         }
         
-        if let encfsUrl = UserDefaults.standard.string(forKey: "encfsUrl") {
-            let command = "echo '\(password)' | \(encfsUrl) --stdinpass '\(self.sourceUrl)' '\(self.targetUrl)'"
+        if let encfsPath = UserDefaults.standard.string(forKey: "encfsPath") {
+            let command = "echo '\(password)' | \(encfsPath) --stdinpass '\(self.sourcePath)' '\(self.mountPath)'"
             let result = shell(command)
             if (result.code == 0) {
                 self.mountState = true
             }
             return (result.code, result.errorString)
         } else {
-            Logger.encfs.error("can not get encfsUrl")
-            return (-1, "can not get encfsUrl")
+            return (-1, "can not get encfsPath")
         }
-        
     }
     
     mutating func umount() -> (code: Int32, errorString: String) {
@@ -40,21 +37,20 @@ struct Point: Codable, Identifiable {
             return (-1, "already umount")
         }
         
-        if let encfsUrl = UserDefaults.standard.string(forKey: "encfsUrl") {
-            let command = "\(encfsUrl) -u '\(self.targetUrl)'"
+        if let encfsPath = UserDefaults.standard.string(forKey: "encfsPath") {
+            let command = "\(encfsPath) -u '\(self.mountPath)'"
             let result = shell(command)
             if (result.code == 0) {
                 self.mountState = false
             }
             return (result.code, result.errorString)
         } else {
-            Logger.encfs.error("can not get encfsUrl")
-            return (-1, "can not get encfsUrl")
+            return (-1, "can not get encfsPath")
         }
     }
 }
 
-class PointModel: ObservableObject {
+class PointManager: ObservableObject {
     @Published var points: [Point]
     
     init() {
@@ -66,18 +62,38 @@ class PointModel: ObservableObject {
             }
         }
     }
+
+    func createPoint(point: inout Point, password: String) -> (state: Bool, errorString: String) {
+        if (!points.contains(where: { $0.name == point.name })) {
+            if let encfsPath = UserDefaults.standard.string(forKey: "encfsPath") {
+                let command = #"echo '\n\n"# + password + #"\n"# + password + #"\n' | "# + encfsPath + " --stdinpass '\(point.sourcePath)' '\(point.mountPath)'"
+                let result = shell(command)
+                if (result.code == 0) {
+                    point.mountState = true
+                    self.points.append(point)
+                    saveData()
+                }
+                return (result.code==0 ? false : true, result.errorString)
+            } else {
+                return (true, "Can not get encfsPath")
+            }
+        } else {
+            return (true, "Name repeated")
+        }
+    }
     
-    func addPoint(point: Point) -> Bool {
+    func importPoint(point: Point) -> (state: Bool, errorString: String) {
         if (!points.contains(where: { $0.name == point.name })) {
             self.points.append(point)
             saveData()
-            return false
+            return (false, "")
         } else {
-            return true
+            return (true, "Name repeated")
         }
     }
     
     func updatePoint(index: Int, point: Point) {
+        points[index] = point
         saveData()
     }
     
@@ -112,7 +128,7 @@ class PointModel: ObservableObject {
 }
 
 func shell(_ command: String) -> (code: Int32, errorString: String) {
-//    Logger.encfs.info("command: \(command)")
+//    print("command: \(command)")
     
     let task = Process()
     task.launchPath = "/bin/bash"
@@ -130,7 +146,6 @@ func shell(_ command: String) -> (code: Int32, errorString: String) {
         let output = String(data: data, encoding: .utf8)!
         return (task.terminationStatus, output)
     } catch {
-        Logger.encfs.error("An error occurred: \(error)")
         return (-1, "Error executing command: \(error.localizedDescription)")
     }
 }
