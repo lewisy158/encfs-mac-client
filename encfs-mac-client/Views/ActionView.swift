@@ -41,3 +41,13 @@ struct ActionView: View {
         }
     }
 }
+
+#Preview {
+    ActionView(
+        text:"test",
+        subtitle: "test",
+        actionName: "Browse"
+    ) {
+        
+    }
+}

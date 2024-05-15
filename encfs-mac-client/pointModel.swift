@@ -1,44 +1,35 @@
 
 import Foundation
-import os.log
-
-let encodedKeySize = 44
-let saltLength = 20
-
-let keySize = 192
-let blockSize = 1024
 
 struct Point: Codable, Identifiable {
     var id = UUID()
     var name: String
-    var sourceUrl: String
-    var targetUrl: String
+    var sourcePath: String
+    var mountPath: String
     var mountState: Bool = false
     
     private enum CodingKeys: String, CodingKey {
         case id
         case name
-        case sourceUrl
-        case targetUrl
+        case sourcePath
+        case mountPath
     }
-    
+
     mutating func mount(password: String) -> (code: Int32, errorString: String) {
         if self.mountState {
             return (-1, "already mount")
         }
         
         if let encfsPath = UserDefaults.standard.string(forKey: "encfsPath") {
-            let command = "echo '\(password)' | \(encfsPath) --stdinpass '\(self.sourceUrl)' '\(self.targetUrl)'"
+            let command = "echo '\(password)' | \(encfsPath) --stdinpass '\(self.sourcePath)' '\(self.mountPath)'"
             let result = shell(command)
             if (result.code == 0) {
                 self.mountState = true
             }
             return (result.code, result.errorString)
         } else {
-            Logger.encfs.error("can not get encfsPath")
             return (-1, "can not get encfsPath")
         }
-        
     }
     
     mutating func umount() -> (code: Int32, errorString: String) {
@@ -47,20 +38,19 @@ struct Point: Codable, Identifiable {
         }
         
         if let encfsPath = UserDefaults.standard.string(forKey: "encfsPath") {
-            let command = "\(encfsPath) -u '\(self.targetUrl)'"
+            let command = "\(encfsPath) -u '\(self.mountPath)'"
             let result = shell(command)
             if (result.code == 0) {
                 self.mountState = false
             }
             return (result.code, result.errorString)
         } else {
-            Logger.encfs.error("can not get encfsPath")
             return (-1, "can not get encfsPath")
         }
     }
 }
 
-class PointModel: ObservableObject {
+class PointManager: ObservableObject {
     @Published var points: [Point]
     
     init() {
@@ -72,31 +62,38 @@ class PointModel: ObservableObject {
             }
         }
     }
+
+    func createPoint(point: inout Point, password: String) -> (state: Bool, errorString: String) {
+        if (!points.contains(where: { $0.name == point.name })) {
+            if let encfsPath = UserDefaults.standard.string(forKey: "encfsPath") {
+                let command = #"echo '\n\n"# + password + #"\n"# + password + #"\n' | "# + encfsPath + " --stdinpass '\(point.sourcePath)' '\(point.mountPath)'"
+                let result = shell(command)
+                if (result.code == 0) {
+                    point.mountState = true
+                    self.points.append(point)
+                    saveData()
+                }
+                return (result.code==0 ? false : true, result.errorString)
+            } else {
+                return (true, "Can not get encfsPath")
+            }
+        } else {
+            return (true, "Name repeated")
+        }
+    }
     
-//    func createPoint(point: Point, password: String) -> Bool {
-//        if (!points.contains(where: { $0.name == point.name })) {
-//            
-//            let kdfIterations = Int.random(in: 700000...800000)
-//            
-//            self.points.append(point)
-//            saveData()
-//            return false
-//        } else {
-//            return true
-//        }
-//    }
-    
-    func importPoint(point: Point) -> Bool {
+    func importPoint(point: Point) -> (state: Bool, errorString: String) {
         if (!points.contains(where: { $0.name == point.name })) {
             self.points.append(point)
             saveData()
-            return false
+            return (false, "")
         } else {
-            return true
+            return (true, "Name repeated")
         }
     }
     
     func updatePoint(index: Int, point: Point) {
+        points[index] = point
         saveData()
     }
     
@@ -131,7 +128,7 @@ class PointModel: ObservableObject {
 }
 
 func shell(_ command: String) -> (code: Int32, errorString: String) {
-//    Logger.encfs.info("command: \(command)")
+//    print("command: \(command)")
     
     let task = Process()
     task.launchPath = "/bin/bash"
@@ -149,21 +146,6 @@ func shell(_ command: String) -> (code: Int32, errorString: String) {
         let output = String(data: data, encoding: .utf8)!
         return (task.terminationStatus, output)
     } catch {
-        Logger.encfs.error("An error occurred: \(error)")
         return (-1, "Error executing command: \(error.localizedDescription)")
     }
-}
-
-//func generateSalt(length: Int) -> Data {
-//    var salt = Data(count: length)
-//    salt.withUnsafeMutableBytes { buffer in
-//        _ = SecRandomCopyBytes(kSecRandomDefault, length, buffer.baseAddress!)
-//    }
-//    return salt
-//}
-
-
-
-func generateKey(password: String) {
-    
 }

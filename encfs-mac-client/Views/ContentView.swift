@@ -3,31 +3,44 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @ObservedObject var pointModel: PointModel
+    @ObservedObject var pointManager: PointManager
 
-//    @State private var showCreation: Bool = false
+    @State private var showCreation: Bool = false
     @State private var showImportation: Bool = false
     @State private var deleteConfirmation: Bool = false
     @State private var selectedIndex: Int = -1
     @State private var selectedMountState: Bool = false
+    
     @State private var password: String = ""
     @State private var errorState: Bool = false
     @State private var errorString: String = ""
 
     var body: some View {
         NavigationSplitView {
-            pointView
+            List(selection: $selectedIndex) {
+                pointView
+            }
+            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
+            .alert(errorString, isPresented: $errorState) {
+                Button("OK", role: .cancel) {}
+            }
+            .onChange(of: selectedIndex) {
+                password = ""
+                if (0 <= selectedIndex && selectedIndex+1 <= pointManager.points.count) {
+                    selectedMountState = pointManager.points[selectedIndex].mountState
+                }
+            }
         } detail: {
             Text("Select a point")
         }
         .toolbar {
-//            ToolbarItem(placement: .primaryAction) {
-//                Button {
-//                    showCreation.toggle()
-//                } label: {
-//                    Image(systemName: "plus")
-//                }
-//            }
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showCreation.toggle()
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button {
                     showImportation.toggle()
@@ -41,14 +54,14 @@ struct ContentView: View {
                 } label: {
                     Image(systemName: "trash")
                 }
-                .disabled(pointModel.points.isEmpty || selectedMountState)
+                .disabled(pointManager.points.isEmpty || selectedMountState)
             }
         }
-//        .sheet(isPresented: $showCreation) {
-//            CreationView(pointModel: pointModel)
-//        }
+        .sheet(isPresented: $showCreation) {
+            CreationView(pointManager: pointManager)
+        }
         .sheet(isPresented: $showImportation) {
-            ImportView(pointModel: pointModel)
+            ImportView(pointManager: pointManager)
         }
         .alert(isPresented: $deleteConfirmation) {
             Alert(
@@ -56,7 +69,7 @@ struct ContentView: View {
                 message: Text("Are you sure you want to delete this point?"),
                 primaryButton: .cancel(),
                 secondaryButton: .destructive(Text("Delete")) {
-                    pointModel.deletePoint(index: selectedIndex)
+                    pointManager.deletePoint(index: selectedIndex)
                 }
             )
         }
@@ -64,16 +77,55 @@ struct ContentView: View {
     
     @ViewBuilder
     var pointView: some View {
-        List(selection: $selectedIndex) {
-            ForEach(pointModel.points.indices, id: \.self) { index in
-                NavigationLink {
-                    HStack {
-                        if (!pointModel.points[index].mountState) {
-                            SecureField("Password", text: $password)
-                                .frame(width: 120)
-                                .font(.system(size: 16, weight: .medium, design: .rounded))
+        ForEach(pointManager.points.indices, id: \.self) { index in
+            NavigationLink {
+                Form {
+                    ActionView(
+                        text: "Source Path",
+                        subtitle: pointManager.points[index].sourcePath,
+                        actionName: "Browse"
+                    ) {
+                        let panel = NSOpenPanel()
+                        panel.canChooseFiles = false
+                        panel.canChooseDirectories = true
+                        panel.allowsMultipleSelection = false
+                        panel.canCreateDirectories = true
+                        panel.begin { result in
+                            if result == .OK, let url = panel.urls.first {
+                                var point = pointManager.points[index]
+                                point.sourcePath = url.path()
+                                pointManager.updatePoint(index: index, point: point)
+                            }
+                        }
+                    }
+                    .disabled(pointManager.points[index].mountState)
+                    
+                    ActionView(
+                        text: "Mount Path",
+                        subtitle: pointManager.points[index].mountPath,
+                        actionName: "Browse"
+                    ) {
+                        let panel = NSOpenPanel()
+                        panel.canChooseFiles = false
+                        panel.canChooseDirectories = true
+                        panel.allowsMultipleSelection = false
+                        panel.canCreateDirectories = true
+                        panel.begin { result in
+                            if result == .OK, let url = panel.urls.first {
+                                var point = pointManager.points[index]
+                                point.mountPath = url.path()
+                                pointManager.updatePoint(index: index, point: point)
+                            }
+                        }
+                    }
+                    .disabled(pointManager.points[index].mountState)
+                    
+                    if (!pointManager.points[index].mountState) {
+                        SecureField("Password:", text: $password)
+                        HStack {
+                            Spacer()
                             Button {
-                                let result = pointModel.points[index].mount(password: password)
+                                let result = pointManager.points[index].mount(password: password)
                                 password = ""
                                 if result.code != 0 {
                                     errorString = result.errorString
@@ -90,9 +142,14 @@ struct ContentView: View {
                             }
                             .buttonStyle(.borderedProminent)
                             .tint(.accentColor)
-                        } else {
+                            .disabled(password.isEmpty)
+                            Spacer()
+                        }
+                    } else {
+                        HStack {
+                            Spacer()
                             Button {
-                                let result = pointModel.points[index].umount()
+                                let result = pointManager.points[index].umount()
                                 if result.code != 0 {
                                     errorString = result.errorString
                                     errorState = true
@@ -108,26 +165,19 @@ struct ContentView: View {
                             }
                             .buttonStyle(.borderedProminent)
                             .tint(.accentColor)
+                            Spacer()
                         }
                     }
-                } label: {
-                    Text(pointModel.points[index].name)
                 }
-            }
-        }
-        .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-        .alert(errorString, isPresented: $errorState) {
-            Button("OK", role: .cancel) {}
-        }
-        .onChange(of: selectedIndex) {
-            password = ""
-            if (0 <= selectedIndex && selectedIndex+1 <= pointModel.points.count) {
-                selectedMountState = pointModel.points[selectedIndex].mountState
+                .formStyle(.grouped)
+                .frame(width: 400)
+            } label: {
+                Text(pointManager.points[index].name)
             }
         }
     }
 }
 
 #Preview {
-    ContentView(pointModel: PointModel())
+    ContentView(pointManager: PointManager())
 }

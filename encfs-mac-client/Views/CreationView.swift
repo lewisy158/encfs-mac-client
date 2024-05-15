@@ -2,13 +2,15 @@
 import SwiftUI
 
 struct CreationView: View {
-    @ObservedObject var pointModel: PointModel
+    @ObservedObject var pointManager: PointManager
     
     @State private var newPointName: String = ""
     @State private var newPassword: String = ""
-    @State private var newSourceURL: String = ""
-    @State private var newTargetURL: String = ""
+    @State private var newSourcePath: String = ""
+    @State private var newMountPath: String = ""
+    
     @State private var createState: Bool = false
+    @State private var createErrorString: String = ""
     
     @Environment(\.dismiss) private var dismiss
 
@@ -19,7 +21,7 @@ struct CreationView: View {
                 SecureField("Password", text: $newPassword)
                 ActionView(
                     text: "Source Path",
-                    subtitle: newSourceURL,
+                    subtitle: newSourcePath,
                     actionName: "Browse"
                 ) {
                     let panel = NSOpenPanel()
@@ -29,13 +31,13 @@ struct CreationView: View {
                     panel.canCreateDirectories = false
                     panel.begin { result in
                         if result == .OK, let url = panel.urls.first {
-                            newSourceURL = url.path()
+                            newSourcePath = url.path()
                         }
                     }
                 }
                 ActionView(
-                    text: "Target Path",
-                    subtitle: newTargetURL,
+                    text: "Mount Path",
+                    subtitle: newMountPath,
                     actionName: "Browse"
                 ) {
                     let panel = NSOpenPanel()
@@ -45,7 +47,7 @@ struct CreationView: View {
                     panel.canCreateDirectories = true
                     panel.begin { result in
                         if result == .OK, let url = panel.urls.first {
-                            newTargetURL = url.path()
+                            newMountPath = url.path()
                         }
                     }
                 }
@@ -64,8 +66,11 @@ struct CreationView: View {
                         submit()
                     }
                     .keyboardShortcut(.defaultAction)
-                    .disabled(newPointName.isEmpty || newSourceURL.isEmpty ||
-                        newTargetURL.isEmpty)
+                    .disabled(
+                        newPointName.isEmpty ||
+                        newPassword.isEmpty ||
+                        newSourcePath.isEmpty ||
+                        newMountPath.isEmpty)
                 }
             }
             .onSubmit {
@@ -74,23 +79,27 @@ struct CreationView: View {
         }
         .fixedSize(horizontal: false, vertical: true)
         .frame(width: 400)
-        .alert("Name repeated", isPresented: $createState) {
+        .alert(createErrorString, isPresented: $createState) {
             Button("OK", role: .cancel) {}
         }
     }
 
     func submit() {
-        let point = Point(
+        var point = Point(
             name: newPointName,
-            sourceUrl: newSourceURL,
-            targetUrl: newTargetURL)
-//        createState = pointModel.createPoint(point: point, password: newPassword)
-//        if !createState {
-//            dismiss()
-//        }
+            sourcePath: newSourcePath,
+            mountPath: newMountPath)
+        let result = pointManager.createPoint(point: &point, password: newPassword)
+        if !result.state {
+            createErrorString = result.errorString
+        }
+        createState = result.state
+        if !createState {
+            dismiss()
+        }
     }
 }
 
 #Preview {
-    CreationView(pointModel: PointModel())
+    CreationView(pointManager: PointManager())
 }

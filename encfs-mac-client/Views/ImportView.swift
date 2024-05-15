@@ -2,12 +2,14 @@
 import SwiftUI
 
 struct ImportView: View {
-    @ObservedObject var pointModel: PointModel
+    @ObservedObject var pointManager: PointManager
     
     @State private var newPointName: String = ""
-    @State private var newSourceURL: String = ""
-    @State private var newTargetURL: String = ""
+    @State private var newSourcePath: String = ""
+    @State private var newMountPath: String = ""
+    
     @State private var importState: Bool = false
+    @State private var importErrorString: String = ""
     
     @Environment(\.dismiss) private var dismiss
 
@@ -17,7 +19,7 @@ struct ImportView: View {
                 TextField("Name", text: $newPointName)
                 ActionView(
                     text: "Source Path",
-                    subtitle: newSourceURL,
+                    subtitle: newSourcePath,
                     actionName: "Browse"
                 ) {
                     let panel = NSOpenPanel()
@@ -27,13 +29,13 @@ struct ImportView: View {
                     panel.canCreateDirectories = false
                     panel.begin { result in
                         if result == .OK, let url = panel.urls.first {
-                            newSourceURL = url.path()
+                            newSourcePath = url.path()
                         }
                     }
                 }
                 ActionView(
-                    text: "Target Path",
-                    subtitle: newTargetURL,
+                    text: "Mount Path",
+                    subtitle: newMountPath,
                     actionName: "Browse"
                 ) {
                     let panel = NSOpenPanel()
@@ -43,7 +45,7 @@ struct ImportView: View {
                     panel.canCreateDirectories = true
                     panel.begin { result in
                         if result == .OK, let url = panel.urls.first {
-                            newTargetURL = url.path()
+                            newMountPath = url.path()
                         }
                     }
                 }
@@ -62,8 +64,10 @@ struct ImportView: View {
                         submit()
                     }
                     .keyboardShortcut(.defaultAction)
-                    .disabled(newPointName.isEmpty || newSourceURL.isEmpty ||
-                        newTargetURL.isEmpty)
+                    .disabled(
+                        newPointName.isEmpty ||
+                        newSourcePath.isEmpty ||
+                        newMountPath.isEmpty)
                 }
             }
             .onSubmit {
@@ -72,7 +76,7 @@ struct ImportView: View {
         }
         .fixedSize(horizontal: false, vertical: true)
         .frame(width: 400)
-        .alert("Name repeated", isPresented: $importState) {
+        .alert(importErrorString, isPresented: $importState) {
             Button("OK", role: .cancel) {}
         }
     }
@@ -80,9 +84,13 @@ struct ImportView: View {
     func submit() {
         let point = Point(
             name: newPointName,
-            sourceUrl: newSourceURL,
-            targetUrl: newTargetURL)
-        importState = pointModel.importPoint(point: point)
+            sourcePath: newSourcePath,
+            mountPath: newMountPath)
+        let result = pointManager.importPoint(point: point)
+        if !result.state {
+            importErrorString = result.errorString
+        }
+        importState = result.state
         if !importState {
             dismiss()
         }
@@ -90,5 +98,5 @@ struct ImportView: View {
 }
 
 #Preview {
-    ImportView(pointModel: PointModel())
+    ImportView(pointManager: PointManager())
 }
