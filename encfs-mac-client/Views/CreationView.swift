@@ -31,7 +31,7 @@ struct CreationView: View {
                     panel.canCreateDirectories = false
                     panel.begin { result in
                         if result == .OK, let url = panel.urls.first {
-                            newSourcePath = url.path()
+                            newSourcePath = url.path(percentEncoded: false)
                         }
                     }
                 }
@@ -47,7 +47,7 @@ struct CreationView: View {
                     panel.canCreateDirectories = true
                     panel.begin { result in
                         if result == .OK, let url = panel.urls.first {
-                            newMountPath = url.path()
+                            newMountPath = url.path(percentEncoded: false)
                         }
                     }
                 }

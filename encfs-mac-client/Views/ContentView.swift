@@ -93,7 +93,7 @@ struct ContentView: View {
                         panel.begin { result in
                             if result == .OK, let url = panel.urls.first {
                                 var point = pointManager.points[index]
-                                point.sourcePath = url.path()
+                                point.sourcePath = url.path(percentEncoded: false)
                                 pointManager.updatePoint(index: index, point: point)
                             }
                         }
@@ -113,7 +113,7 @@ struct ContentView: View {
                         panel.begin { result in
                             if result == .OK, let url = panel.urls.first {
                                 var point = pointManager.points[index]
-                                point.mountPath = url.path()
+                                point.mountPath = url.path(percentEncoded: false)
                                 pointManager.updatePoint(index: index, point: point)
                             }
                         }

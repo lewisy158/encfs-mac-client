@@ -19,7 +19,7 @@ struct SettingsView: View {
                     panel.canCreateDirectories = false
                     panel.begin { result in
                         if result == .OK, let url = panel.urls.first {
-                            encfsPath = url.path()
+                            encfsPath = url.path(percentEncoded: false)
                         }
                     }
                 } label: {
