@@ -143,6 +143,7 @@ struct ContentView: View {
                             .buttonStyle(.borderedProminent)
                             .tint(.accentColor)
                             .disabled(password.isEmpty)
+                            .keyboardShortcut(.defaultAction)
                             Spacer()
                         }
                     } else {
@@ -165,6 +166,7 @@ struct ContentView: View {
                             }
                             .buttonStyle(.borderedProminent)
                             .tint(.accentColor)
+                            .keyboardShortcut(.cancelAction)
                             Spacer()
                         }
                     }

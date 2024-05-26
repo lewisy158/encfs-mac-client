@@ -42,6 +42,7 @@ struct SettingsView: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(.accentColor)
+            .keyboardShortcut(.defaultAction)
         }
         .padding()
         .frame(width: 300, height: 120)

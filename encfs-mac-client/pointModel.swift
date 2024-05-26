@@ -112,7 +112,7 @@ class PointManager: ObservableObject {
     }
     
     func umount() {
-        for index in 0...points.count {
+        for index in 0...points.count-1 {
             if points[index].mountState {
                 _ = points[index].umount()
             }
